@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Регистрация Tez Kargo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background: #f3f4f6;
+  margin: 0;
+  padding: 15px;
+}
+.container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 20px;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.logo { width: 170px; display: block; margin: 0 auto 20px; }
+h2 { text-align: center; margin-bottom: 15px; color:#2e7df6;}
+p { text-align: center; margin-bottom: 15px; font-size:14px; color:#555; line-height:1.5; }
+input { width: 100%; padding: 12px; margin: 5px 0 15px 0; border-radius: 10px; border:1px solid #ccc; font-size:14px; }
+button { width:100%; padding:14px; border:none; border-radius:30px; font-size:16px; font-weight:bold; cursor:pointer; margin-top:10px; }
+.main-btn { background:#2e7df6; color:white; box-shadow:0 4px 0 #1a5ad1; }
+.main-btn:active { transform:scale(0.98); }
+.success { display:none; text-align:center; margin-top:20px; }
+.success p { font-size:16px; margin:10px 0; }
+.success-btn { background:#007bff; color:white; width:80%; padding:12px; border:none; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow:0 3px 0 #0056b3; }
+.success-btn:active { transform:scale(0.98); }
+.checkbox-container { display:flex; align-items:center; justify-content:center; margin-bottom:15px; }
+.checkbox-container input { width:auto; margin-right:10px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Логотип -->
+  <img src="logo.jpg.jpg" class="logo" alt="Tez Kargo">
+
+  <!-- Договор оферты -->
+  <div id="agreement">
+    <h2>Договор публичной оферты</h2>
+    <p>
+      Используя логистическую услугу <b>Tez Kargo</b>, вы соглашаетесь с условиями доставки грузов:<br>
+      • Компания не отвечает за качество или комплектность товара.<br>
+      • Клиент обязан предоставить точные данные для доставки.<br>
+      • Сроки доставки могут зависеть от таможни, погоды и других обстоятельств.<br>
+      • Все споры решаются по законодательству Кыргызской Республики.
+    </p>
+    <div class="checkbox-container">
+      <input type="checkbox" id="agreeCheck">
+      <label for="agreeCheck">Я согласен с договором оферты</label>
+    </div>
+    <button class="main-btn" id="startBtn" disabled>Пройти регистрацию</button>
+  </div>
+
+  <!-- Форма регистрации -->
+  <div id="formContainer" style="display:none;">
+    <h2>Регистрация</h2>
+    <form id="form">
+      <input type="text" id="name" placeholder="ФИО" required>
+      <input type="tel" id="phone" placeholder="+996..." required>
+      <input type="text" id="city" placeholder="Город" required>
+      <input type="text" id="address" placeholder="Адрес (необязательно)">
+      
+      <!-- Скрытые поля -->
+      <input type="hidden" id="telegram_id" value="">
+      <input type="hidden" id="client_code" value="">
+
+      <button class="main-btn" type="submit">Зарегистрироваться</button>
+    </form>
+  </div>
+
+  <!-- Экран успешной регистрации -->
+  <div class="success" id="success">
+    <h2>Регистрация завершена ✅</h2>
+    <p id="codeDisplay"></p>
+    <p>Спасибо! Теперь вам доступны все функции бота.</p>
+    <button class="success-btn" id="goBot">Перейти в бот</button>
+  </div>
+</div>
+
+<script>
+// Telegram WebApp API
+const tg = window.Telegram?.WebApp;
+if(tg) tg.expand();
+
+// Включение кнопки регистрации при подтверждении договора
+document.getElementById("agreeCheck").addEventListener("change", function() {
+  document.getElementById("startBtn").disabled = !this.checked;
+});
+
+// Начать регистрацию
+document.getElementById("startBtn").addEventListener("click", function(){
+  document.getElementById("agreement").style.display = "none";
+  document.getElementById("formContainer").style.display = "block";
+});
+
+// Отправка формы
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const userData = {
+    name: document.getElementById("name").value.trim(),
+    phone: document.getElementById("phone").value.trim(),
+    city: document.getElementById("city").value.trim(),
+    address: document.getElementById("address").value.trim(),
+    telegram_id: tg?.initDataUnsafe?.user?.id || "local-test",
+    client_code: ""
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbyrP9IpKZUnxs4zcjoA9fRCPEVBR54t-NhQehz5cFm-lnUunr-9eO9tXgBO1Rwll9rHgg/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    const code = data.client_code || "Ошибка генерации кода";
+    document.getElementById("client_code").value = code;
+
+    document.getElementById("formContainer").style.display = "none";
+    const successDiv = document.getElementById("success");
+    successDiv.style.display = "block";
+    document.getElementById("codeDisplay").innerHTML = `<strong>Ваш клиентский код:</strong> ${code}`;
+  })
+  .catch(err => { console.error(err); alert("Ошибка отправки данных. Попробуйте позже."); });
+
+  if(tg) tg.sendData(JSON.stringify({is_registered:"yes", ...userData}));
+});
+
+// Кнопка "Перейти в бот"
+document.getElementById("goBot").addEventListener("click", function(){
+  if(tg) tg.close();
+});
+</script>
+
+</body>
+</html>
