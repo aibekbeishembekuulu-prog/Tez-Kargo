@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tez Kargo</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f1f1f1;
+margin:0;
+text-align:center;
+}
+
+.logo{
+width:160px;
+margin-top:20px;
+}
+
+.card{
+background:#eeeeee;
+margin:20px;
+padding:20px;
+border-radius:12px;
+text-align:left;
+}
+
+.btn{
+background:#ff3b30;
+color:white;
+border:none;
+padding:15px;
+width:90%;
+font-size:18px;
+border-radius:30px;
+cursor:pointer;
+}
+
+.form{
+display:none;
+background:white;
+margin:20px;
+padding:20px;
+border-radius:12px;
+text-align:left;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:6px;
+margin-bottom:12px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:16px;
+}
+
+.submit{
+background:#ff3b30;
+color:white;
+border:none;
+padding:14px;
+width:100%;
+font-size:18px;
+border-radius:25px;
+cursor:pointer;
+}
+
+#offerText{
+display:none;
+background:#fff;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+}
+
+#agreeContainer{
+display:none;
+margin:15px 0;
+}
+
+.result-card{
+display:none;
+background:#fff;
+margin:20px;
+padding:20px;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<img src="logo.jpg.jpg" class="logo">
+
+<div class="card" id="offerCard">
+
+<h3>ДОГОВОР ПУБЛИЧНОЙ ОФЕРТЫ</h3>
+
+<p>Используя <b>Логистическую услугу Tez Kargo</b>, вы соглашаетесь с условиями доставки.</p>
+
+<button class="btn" onclick="toggleOffer()">Показать / Скрыть договор</button>
+
+<div id="offerText">
+
+• Компания выполняет только перевозку товаров.<br>
+• Компания не отвечает за качество товара.<br>
+• Клиент обязан предоставить точные данные.<br>
+• Сроки доставки зависят от таможни и погоды.<br>
+
+</div>
+
+<div id="agreeContainer">
+<input type="checkbox" id="agreeCheck"> Я согласен с договором
+</div>
+
+<button class="btn" id="startFormBtn" onclick="openForm()" style="display:none">
+Начать регистрацию
+</button>
+
+</div>
+
+
+<div class="form" id="form">
+
+<h2>Регистрация</h2>
+
+<label>ФИО</label>
+<input id="name" placeholder="Ваше имя">
+
+<label>Телефон</label>
+<input id="phone" placeholder="+996...">
+
+<label>Город</label>
+<input id="city" placeholder="Ваш город">
+
+<label>Адрес</label>
+<input id="address" placeholder="Адрес">
+
+<button class="submit" onclick="register()">Зарегистрироваться</button>
+
+</div>
+
+
+<div class="result-card" id="resultCard">
+<div id="resultText"></div>
+</div>
+
+
+<script>
+
+if(localStorage.getItem("tez_registered")){
+
+document.getElementById("offerCard").style.display="none";
+document.getElementById("form").style.display="none";
+
+document.getElementById("resultCard").style.display="block";
+
+document.getElementById("resultText").innerHTML=
+"✅ Вы уже зарегистрированы<br><br>Ваш код: <b>"+localStorage.getItem("tez_code")+"</b>";
+
+}
+
+function toggleOffer(){
+
+let offer=document.getElementById("offerText");
+let agree=document.getElementById("agreeContainer");
+let startBtn=document.getElementById("startFormBtn");
+
+if(offer.style.display==="none"){
+
+offer.style.display="block";
+agree.style.display="block";
+startBtn.style.display="block";
+
+}else{
+
+offer.style.display="none";
+agree.style.display="none";
+startBtn.style.display="none";
+
+}
+
+}
+
+function openForm(){
+
+if(!document.getElementById("agreeCheck").checked){
+
+alert("Вы должны согласиться с договором!");
+
+return;
+
+}
+
+document.getElementById("form").style.display="block";
+
+window.scrollTo(0,document.body.scrollHeight);
+
+}
+
+function register(){
+
+let name=document.getElementById("name").value;
+let phone=document.getElementById("phone").value;
+let city=document.getElementById("city").value;
+let address=document.getElementById("address").value;
+
+if(!name||!phone||!city){
+
+alert("Заполните все обязательные поля");
+
+return;
+
+}
+
+fetch("https://script.google.com/macros/s/AKfycbwFDtq0P9UUpi04C1eVxLciWYbPr7jYnGztT9jqYNEAmS42nIs7RyPQGgcPOgMHsUil/exec",{
+
+method:"POST",
+
+body:JSON.stringify({
+
+name:name,
+phone:phone,
+city:city,
+address:address
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+localStorage.setItem("tez_registered","yes");
+localStorage.setItem("tez_code",data.client_code);
+
+document.getElementById("offerCard").style.display="none";
+document.getElementById("form").style.display="none";
+
+document.getElementById("resultCard").style.display="block";
+
+document.getElementById("resultText").innerHTML=
+
+"✅ Регистрация успешна<br><br>Ваш клиентский код: <b>"+data.client_code+"</b><br><br>Переход в Telegram...";
+
+setTimeout(function(){
+
+window.location.href="https://t.me/Tez_kargo_bot";
+
+},3000);
+
+})
+
+.catch(err=>{
+
+alert("Ошибка регистрации");
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
