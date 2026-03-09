@@ -1,0 +1,196 @@
+<!DOCTYPE html>  <html lang="ru">    <head>    
+<meta charset="UTF-8">    
+<meta name="viewport" content="width=device-width, initial-scale=1">    
+<title>Tez Kargo</title>    
+<style>    
+body{    
+    font-family: Arial;    
+    background:#f1f1f1;    
+    margin:0;    
+    text-align:center;    
+}    
+.logo{    
+    width:160px;    
+    margin-top:20px;    
+}    
+.card{    
+    background:#eeeeee;    
+    margin:20px;    
+    padding:20px;    
+    border-radius:12px;    
+    text-align:left;    
+}    
+h2{ margin-top:10px; }    
+.btn{    
+    background:#ff3b30;    
+    color:white;    
+    border:none;    
+    padding:15px;    
+    width:90%;    
+    font-size:18px;    
+    border-radius:30px;    
+    cursor:pointer;    
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);    
+}    
+.form{    
+    display:none;    
+    background:white;    
+    margin:20px;    
+    padding:20px;    
+    border-radius:12px;    
+    text-align:left;    
+}    
+input{    
+    width:100%;    
+    padding:12px;    
+    margin-top:6px;    
+    margin-bottom:12px;    
+    border:1px solid #ccc;    
+    border-radius:8px;    
+    font-size:16px;    
+}    
+.submit{    
+    background:#ff3b30;    
+    color:white;    
+    border:none;    
+    padding:14px;    
+    width:100%;    
+    font-size:18px;    
+    border-radius:25px;    
+    cursor:pointer;    
+}    
+#offerText{    
+    display:none;    
+    background:#fff;    
+    padding:10px;    
+    margin-top:10px;    
+    border-radius:8px;    
+    text-align:left;    
+}    
+#agreeContainer{    
+    display:none;    
+    margin:15px 0;    
+}    
+.result-card{    
+    display:none;    
+    background:#fff;    
+    margin:20px;    
+    padding:20px;    
+    border-radius:12px;    
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);    
+    text-align:center;    
+    animation: fadeIn 0.5s ease;    
+}    
+@keyframes fadeIn{    
+    from{opacity:0; transform:translateY(20px);}    
+    to{opacity:1; transform:translateY(0);}    
+}    
+.bot-buttons{    
+    display:none;    
+    margin-top:15px;    
+}    
+.bot-buttons button{    
+    background:#34C759;    
+    color:white;    
+    border:none;    
+    padding:12px;    
+    width:90%;    
+    margin:5px 0;    
+    font-size:16px;    
+    border-radius:20px;    
+    cursor:pointer;    
+}    
+#result{    
+    margin-top:15px;    
+    font-size:16px;    
+    font-weight:bold;    
+    color:green;    
+}    
+</style>    
+</head>    
+<body>  <img src="logo.jpg.jpg" class="logo">  <div class="card">    
+<h3>ДОГОВОР ПУБЛИЧНОЙ ОФЕРТЫ</h3>    
+<p>Используя <b>Логистическую услугу Tez Kargo</b>, вы соглашаетесь с условиями доставки грузов:</p>  <button class="btn" onclick="toggleOffer()">Показать/Скрыть договор оферты</button>  <div id="offerText">    
+• Услуга включает только перевозку товаров, компания не отвечает за качество или комплектность товара.<br>    
+• Клиент обязан предоставить точные данные для доставки.<br>    
+• Сроки доставки могут зависеть от таможни, погоды и других обстоятельств.<br>    
+• Все споры решаются по законодательству Кыргызской Республики.<br><br>    
+<i>Прочтите полный текст договора на официальном сайте перед регистрацией.</i>    
+</div>  <div id="agreeContainer">    
+<input type="checkbox" id="agreeCheck"> Я согласен с договором оферты    
+</div>  <button class="btn" id="startFormBtn" onclick="openForm()" style="display:none">Начать регистрацию</button>  </div>  <div class="form" id="form">    
+<h2>Регистрация</h2>  <label>ФИО</label>  
+<input id="name" placeholder="Ваше имя">  <label>Телефон (WhatsApp)</label>
+<input id="phone" placeholder="+996...">
+
+<label>Город</label>
+<input id="city" placeholder="Ваш город">
+
+<label>Адрес (необязательно)</label>
+<input id="address" placeholder="Адрес">
+
+<button class="submit" onclick="register()">Зарегистрироваться</button>
+
+</div>  <!-- Карточка с результатом и меню чат-бота -->  <div class="result-card" id="resultCard">    
+<div id="resultText"></div>    
+<div class="bot-buttons" id="botButtons">    
+    <button onclick="alert('Чат Бот 1')">Чат Бот 1</button>    
+    <button onclick="alert('Чат Бот 2')">Чат Бот 2</button>    
+    <button onclick="alert('Чат Бот 3')">Чат Бот 3</button>    
+</div>    
+</div>  <script>    
+function toggleOffer(){    
+    let offer = document.getElementById("offerText");    
+    let agree = document.getElementById("agreeContainer");    
+    let startBtn = document.getElementById("startFormBtn");    
+    if(offer.style.display === "none"){    
+        offer.style.display = "block";    
+        agree.style.display = "block";    
+        startBtn.style.display = "block";    
+    } else {    
+        offer.style.display = "none";    
+        agree.style.display = "none";    
+        startBtn.style.display = "none";    
+    }    
+}    function openForm(){
+if(!document.getElementById("agreeCheck").checked){
+alert("Вы должны согласиться с договором оферты чтобы продолжить регистрацию!");
+return;
+}
+document.getElementById("form").style.display = "block";
+window.scrollTo(0,document.body.scrollHeight);
+}
+
+function register(){
+let name = document.getElementById("name").value;
+let phone = document.getElementById("phone").value;
+let city = document.getElementById("city").value;
+let address = document.getElementById("address").value;
+
+if(!name || !phone || !city){    
+    alert("Пожалуйста, заполните все обязательные поля!");    
+    return;    
+}    
+
+fetch("https://script.google.com/macros/s/AKfycbwFDtq0P9UUpi04C1eVxLciWYbPr7jYnGztT9jqYNEAmS42nIs7RyPQGgcPOgMHsUil/exec",{    
+    method:"POST",    
+    body: JSON.stringify({name:name, phone:phone, city:city, address:address})    
+})    
+.then(res => res.json())    
+.then(data => {    
+    document.getElementById("form").style.display = "none"; // скрываем форму    
+    document.getElementById("resultCard").style.display = "block";    
+    document.getElementById("resultText").innerHTML =    
+        "<br>✅ Вы успешно зарегистрировались<br>Ваш клиентский код: <b>" + data.client_code + "</b>";    
+    document.getElementById("botButtons").style.display = "block"; // показываем кнопки чат-бота    
+    window.scrollTo(0,document.body.scrollHeight);    
+})    
+.catch(err => {    
+    console.error(err);    
+    alert("Ошибка при регистрации. Попробуйте ещё раз.");    
+});
+
+}
+</script>  </body>
+
+</html> 
